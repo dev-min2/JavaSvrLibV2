@@ -18,7 +18,7 @@ public class DispatcherBot {
 		return inst;
 	}
 	
-	// Thread-safe한가?
+	// Thread-safe한가 한글테스트?
 	public void dispatch(Packet packet) {
 		// Todo~
 	}
