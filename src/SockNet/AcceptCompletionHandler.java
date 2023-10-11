@@ -88,6 +88,6 @@ public class AcceptCompletionHandler implements CompletionHandler<AsynchronousSo
 	@Override
 	public void close() throws IOException {
 		// TODO Auto-generated method stub
-		
+		stop();
 	}
 }

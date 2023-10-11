@@ -64,16 +64,14 @@ public class Session {
 						if((recvLen + remainLen) < packetLen)
 							break;
 						
+						// 여기까지 오면 정상적인 하나의 패킷을 만들 수 있음.
 						byte[] packetBuffer = new byte[packetLen];
-
 						recvBuffer.readBuffer(packetLen - remainLen); 						
 						System.arraycopy(buffer, pos, packetBuffer, 0, packetLen);
 						
 						Packet packet = PacketUtil.convertPacketFromBytes(packetBuffer);
-						
-//						if(packet != null)
-//							DispatchMessageManager.getInstance().addRecvPacket(sessionId, packet);
-						
+						// 실제 패킷처리.
+												
 						readSize += packetLen;
 						pos += packetLen;
 						
