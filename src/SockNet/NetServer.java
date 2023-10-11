@@ -8,8 +8,8 @@ import java.nio.channels.AsynchronousChannelGroup;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.util.concurrent.Executors;
 
-import CoreAcitive.ApplicationBeanLoader;
 import CoreAcitive.BeanContainer;
+import CoreAcitive.DispatcherBot;
 
 /*
  소켓 Async Server
@@ -20,7 +20,10 @@ public final class NetServer implements Closeable {
 	AcceptCompletionHandler acceptHandler = null;
 	
 	// Core
-	public NetServer(int port) throws IOException {
+	public NetServer(int port) throws Exception {
+		BeanContainer.getBeanContainer().init();
+		DispatcherBot.getDispatcherBot();
+		
 		// Network 처리
 		InetAddress temp = null;
 		InetSocketAddress sockAddr = new InetSocketAddress(temp,port);

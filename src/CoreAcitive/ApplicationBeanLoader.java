@@ -21,10 +21,7 @@ IoC/DI를 위해 등록된 XML정보를 파싱하여 사용.
 */
 public class ApplicationBeanLoader {
 	@SuppressWarnings("null")
-	public HashMap<AbstractMap.SimpleEntry<String, Class>,Object> parseBean(String xmlPath) throws Exception {
-		if(xmlPath == null || xmlPath.isEmpty())
-			return null;
-		
+	public HashMap<AbstractMap.SimpleEntry<String, Class>,Object> parseBean() throws Exception {
 		var ret = new HashMap<AbstractMap.SimpleEntry<String, Class>,Object>();
 		// Class 파싱용으로 잠깐 이용한다.
 		HashMap<String,Class> temp = new HashMap<String,Class>();

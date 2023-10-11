@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
 
-
 // Accept√≥∏Æ.
 public class AcceptCompletionHandler implements CompletionHandler<AsynchronousSocketChannel, Void>, Closeable {
 	private InetSocketAddress addr;

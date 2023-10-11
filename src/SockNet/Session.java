@@ -5,6 +5,7 @@ import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.LinkedList;
 
+import CoreAcitive.DispatcherBot;
 import PacketUtils.Packet;
 import PacketUtils.PacketUtil;
 
@@ -71,6 +72,8 @@ public class Session {
 						
 						Packet packet = PacketUtil.convertPacketFromBytes(packetBuffer);
 						// 실제 패킷처리.
+						if(packet != null)
+							DispatcherBot.getDispatcherBot().dispatch(packet);
 												
 						readSize += packetLen;
 						pos += packetLen;
