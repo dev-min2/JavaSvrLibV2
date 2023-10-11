@@ -11,7 +11,7 @@ public class PacketUtil
 {
 	private PacketUtil() {}
 	
-	public static byte[] getPacketBuffer(short protocol, Object object) throws Exception
+	public static byte[] genPacketBuffer(short protocol, Object object) throws Exception
 	{
 		if(protocol < 0 || object == null)
 			throw new Exception("protocol < 0 || object == null");
@@ -29,6 +29,7 @@ public class PacketUtil
 		System.arraycopy(protocolArray, 0, ret, 0, protocolArray.length);
 		System.arraycopy(packetLenBuffer, 0, ret, Packet.PACKET_CHECK, packetLenBuffer.length);
 		System.arraycopy(objectArray, 0, ret, Packet.PACKET_MIN_LEN, objectArray.length);
+		
 		return ret;
 	}
 	
@@ -37,7 +38,7 @@ public class PacketUtil
 		if(packet == null || !packet.isValidPacket())
 			return null;
 		
-		return getPacketBuffer(packet.getPacketInfo().getValue(),packet);
+		return genPacketBuffer(packet.getPacketInfo().getValue(),packet);
 	}
 	
 	
@@ -90,7 +91,6 @@ public class PacketUtil
 		return packet;
 	}
 	
-	// 데이터 수신 후 정상적인 패킷인지 체크 후 정상적이라면 패킷 크기를 반환
 	private static short isValidPacket(byte[] bytes)
 	{
 		if(bytes == null)
@@ -103,7 +103,6 @@ public class PacketUtil
 		System.arraycopy(bytes, 2, packetLenBuffer, 0, Packet.PACKET_CHECK);
 		short packetLen = ByteBuffer.wrap(packetLenBuffer).getShort();
 		
-		//버퍼에서 읽어온 패킷 크기값이 실제 버퍼크기보다크다면 false. 
 		if(packetLen > bytes.length)
 			return -1;
 		
