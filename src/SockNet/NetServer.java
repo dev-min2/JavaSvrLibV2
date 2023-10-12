@@ -21,8 +21,7 @@ public final class NetServer implements Closeable {
 	
 	// Core
 	public NetServer(int port) throws Exception {
-		BeanContainer.getBeanContainer().init();
-		DispatcherBot.getDispatcherBot();
+		DispatcherBot.getDispatcherBot().init();
 		
 		// Network 처리
 		InetAddress temp = null;
