@@ -5,22 +5,26 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
 public class HandlerMapping {
 	// 요청에 맞는 Controller
+	private Map<String,Object> controllerByRequestURL = null;
+	
+	public HandlerMapping() {
+		controllerByRequestURL = new HashMap<String,Object>();
+	}
 	
 	
-	public void init(HashMap<AbstractMap.SimpleEntry<String, Class>,Object> beanObjByIdClass) {
+	public void init(HashMap<AbstractMap.SimpleEntry<String, Class>,Object> beanObjByIdClass, HandlerAdapter adpater) {
 		// Controller인 Bean들을 찾고, HandlerMapping에 엮어준다.
 		List<Object> controllerList = beanObjByIdClass.entrySet().
 								 						 stream().
 								 						 map(entry -> entry.getValue()).
 								 						 filter(obj -> obj.getClass().getAnnotation(Controller.class) != null).
 								 						 collect(Collectors.toList());
-		
-		// 메소드(REQ)는 여러개. Controller는 한개.
 		
 		// 요청 프로토콜에 맞는 컨트롤러 반환을 위한 처리. (MultiKeyMap 사용?)		
 		for(Object controllerObj : controllerList) {
@@ -32,10 +36,17 @@ public class HandlerMapping {
 					requestKeys.add(checkAnnotationMethod.value()); // 요청 Value
 				}
 			}
+			
+			if(requestKeys.size() <= 0)
+				continue;
+			
+			requestKeys.stream().forEach(str -> controllerByRequestURL.put(str, controllerObj));
 		}
+		
+		adpater.init(controllerByRequestURL);
 	}
 	
 	public Object requestControllerMapping(String protocol) {
-		return new Object();
+		return controllerByRequestURL.get(protocol);
 	}
 }

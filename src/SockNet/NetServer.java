@@ -33,7 +33,6 @@ public final class NetServer implements Closeable {
 		asyncSocketChannel.bind(sockAddr);
         
         acceptHandler = new AcceptCompletionHandler(sockAddr, channelGroup, asyncSocketChannel);
-        
 	}
 	
 	public void startServer() {

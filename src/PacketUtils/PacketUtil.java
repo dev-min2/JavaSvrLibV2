@@ -11,8 +11,10 @@ public class PacketUtil
 {
 	private PacketUtil() {}
 	
-	public static byte[] genPacketBuffer(short protocol, Object object) throws Exception
+	public static byte[] genPacketBuffer(int protocols, Object object) throws Exception
 	{
+		short protocol = (short)protocols;
+		
 		if(protocol < 0 || object == null)
 			throw new Exception("protocol < 0 || object == null");
 		

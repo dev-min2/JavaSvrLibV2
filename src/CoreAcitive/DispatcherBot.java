@@ -28,25 +28,28 @@ public class DispatcherBot {
 	}
 	
 	// 쓰레드에 안전할까? 
-	public void dispatch(Packet packet) throws Exception {
-		// Todo~
-		if(packet == null) 
-			return;
+	public Packet dispatch(Packet requestPacket) throws Exception {
+		Packet ackPacket = null;
+		
+		if(requestPacket == null) 
+			return ackPacket;
 		
 		// 1. HandlerMapping
 		// Get Packet protocol
-		var annotations = packet.getClass().getDeclaredAnnotations();
+		var annotations = requestPacket.getClass().getDeclaredAnnotations();
 		if(annotations == null || annotations.length <= 0 || !(annotations[0] instanceof RequestMapping))
-			return;
+			return ackPacket;
 		
 		String protocol = ((RequestMapping)annotations[0]).value();
 		if(protocol == null || protocol.isEmpty())
-			return;
+			return ackPacket;
 		
 		Object controller = handlerMapping.requestControllerMapping(protocol);
 		if(controller == null)
-			return;
+			return ackPacket;
 		
-		Packet ackPacket = handlerAdapter.requestProcessing(protocol,controller, packet);
+		ackPacket = handlerAdapter.requestProcessing(protocol,controller, requestPacket);
+		
+		return ackPacket;
 	}
 }

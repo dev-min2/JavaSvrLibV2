@@ -26,6 +26,7 @@ public class RingBuffer {
 	
 	public void clean() {
 		byteBuffer.clear();
+		remainLen = 0;
 	}
 	
 	public void compact() {
@@ -49,6 +50,11 @@ public class RingBuffer {
 	}
 	
 	public void writeBuffer(byte[] buffer) {
-		byteBuffer.put(buffer);
+		byte[] array = byteBuffer.array();
+		System.arraycopy(buffer, 0, array, getPosition(), buffer.length);
+	}
+	
+	public byte[] getArrayBuffer() {
+		return byteBuffer.array();
 	}
 }
