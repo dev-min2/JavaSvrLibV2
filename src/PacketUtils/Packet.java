@@ -6,8 +6,8 @@ public class Packet {
 	public static final int PACKET_MIN_LEN = 4; // 패킷 헤더 packetSize
 	public static final int PACKET_CHECK = 2;
 	
-	private short packetSize = 0;
-	private short protocol = 0;
+	protected short packetSize = 0;
+	protected short protocol = 0;
 	
 	public void setPacketInfo( short packetSize, short protocol )
 	{
@@ -23,10 +23,19 @@ public class Packet {
 		
 		return ret;
 	}
-	
 
 	public AbstractMap.SimpleEntry<Short, Short> getPacketInfo()
 	{
 		return new AbstractMap.SimpleEntry<Short, Short>(packetSize,protocol);
 	}
+	
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		Packet cloneObj = new Packet();
+		cloneObj.packetSize = this.packetSize;
+		cloneObj.protocol = this.protocol;
+		
+		return cloneObj;
+	}
+	
 }

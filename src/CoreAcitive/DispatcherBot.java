@@ -1,5 +1,8 @@
 package CoreAcitive;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import PacketUtils.Packet;
 
 public class DispatcherBot {
@@ -9,6 +12,10 @@ public class DispatcherBot {
 	// 특수 빈
 	private HandlerAdapter handlerAdapter = new HandlerAdapter();
 	private HandlerMapping handlerMapping = new HandlerMapping();
+	
+	//Session의 정보를 담는 곳
+	private Map<Integer, HashMap<String,String>> jsonSessionDataBySessionID = new HashMap<Integer,HashMap<String,String>>();
+	private Object sessionMapLock = new Object();
 	
 	private DispatcherBot() {}
 	
@@ -28,7 +35,7 @@ public class DispatcherBot {
 	}
 	
 	// 쓰레드에 안전할까? 
-	public Packet dispatch(Packet requestPacket) throws Exception {
+	public Packet dispatch(Packet requestPacket, Integer sessionId) throws Exception {
 		Packet ackPacket = null;
 		
 		if(requestPacket == null) 
@@ -48,8 +55,29 @@ public class DispatcherBot {
 		if(controller == null)
 			return ackPacket;
 		
-		ackPacket = handlerAdapter.requestProcessing(protocol,controller, requestPacket);
+		
+		// 해당 해시 테이블 자체의 write와 read는 Lock.
+		// 해시테이블의 key에 매칭되는 value는 Lock을 하지않는다.
+		// 해당 value는 현재 구조로서 Session 본인만이 read&write를 할 수 있음(즉 다른 스레드 경합x)
+		HashMap<String,String> sessionDataByJsonKey = null;
+		synchronized(sessionMapLock) {
+			if(!jsonSessionDataBySessionID.containsKey(sessionId)) {
+				jsonSessionDataBySessionID.put(sessionId, new HashMap<String,String>());
+			}
+			sessionDataByJsonKey = jsonSessionDataBySessionID.get(sessionId);
+		}
+		
+		MessageInfo msgInfo = new MessageInfo(sessionDataByJsonKey);
+		ackPacket = handlerAdapter.requestProcessing(protocol,controller, requestPacket, msgInfo);
 		
 		return ackPacket;
+	}
+	
+	public void closeSession(Integer sessionId) {
+		if(jsonSessionDataBySessionID.containsKey(sessionId)) {
+			synchronized(sessionMapLock) {
+				jsonSessionDataBySessionID.remove(sessionId);
+			}
+		}
 	}
 }

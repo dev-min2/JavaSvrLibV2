@@ -73,8 +73,9 @@ public class Session {
 						Packet packet = PacketUtil.convertPacketFromBytes(packetBuffer);
 						// 실제 패킷처리.
 						if(packet != null) {
-							Packet ackPacket = DispatcherBot.getDispatcherBot().dispatch(packet);
-							Session.this.send(ackPacket);
+							Packet ackPacket = DispatcherBot.getDispatcherBot().dispatch(packet, sessionId);
+							if(ackPacket != null)
+								Session.this.send(ackPacket);
 						}
 												
 						readSize += packetLen;
