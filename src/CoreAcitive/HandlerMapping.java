@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 public class HandlerMapping {
 	// 요청에 맞는 Controller
+	// 리팩토링 대상..
 	private Map<String,Object> controllerByRequestURL = null;
 	
 	public HandlerMapping() {

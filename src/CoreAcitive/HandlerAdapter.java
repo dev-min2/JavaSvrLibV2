@@ -33,9 +33,6 @@ public class HandlerAdapter {
 		if(method == null)
 			return null;
 		
-		// 요청 메소드에서 담아서 줘야한다.
-		// 어느 오브젝트의? 메소드인지를 알아야하는듯.
-		// 메소드 호출은 되는데 내부 패킷 캐스팅에서 오류남. 확인필요.
 		Packet ackPacket = null;
 		try {
 			ackPacket = (Packet)method.invoke(controller, requestPacket, msgInfo);
