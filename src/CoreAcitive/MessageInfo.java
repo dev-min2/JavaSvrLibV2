@@ -19,6 +19,10 @@ public class MessageInfo {
 		return sessionDataByJsonKey.get(key);
 	}
 	
+	public void setParameter(String key, String value) {
+		sessionDataByJsonKey.put(key, value);
+	}
+	
 	public String getTime() {
 		return packetArriveTime.toString();
 	}
