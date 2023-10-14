@@ -21,6 +21,8 @@ public class HandlerAdapter {
 			Method[] methods = controller.getClass().getDeclaredMethods();
 			for(Method m : methods) {
 				String requestURLkey = m.getDeclaredAnnotation(RequestMapping.class).value();
+				if(requestURLkey == null)
+					continue;
 				
 				requestMethodByProtocol.put(requestURLkey, m);
 			}

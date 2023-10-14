@@ -17,8 +17,7 @@ public class HandlerMapping {
 	public HandlerMapping() {
 		controllerByRequestURL = new HashMap<String,Object>();
 	}
-	
-	
+		
 	public void init(HashMap<AbstractMap.SimpleEntry<String, Class>,Object> beanObjByIdClass, HandlerAdapter adpater) {
 		// Controller인 Bean들을 찾고, HandlerMapping에 엮어준다.
 		List<Object> controllerList = beanObjByIdClass.entrySet().

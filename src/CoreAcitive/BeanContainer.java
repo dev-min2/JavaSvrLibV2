@@ -29,7 +29,7 @@ public class BeanContainer {
 	
 	public void init(HandlerMapping mapper, HandlerAdapter adapter) throws Exception {
 		beanObjByIdClass = ApplicationBeanLoader.parseBean();
-		mapper.init(beanObjByIdClass,adapter);
+		mapper.init(beanObjByIdClass, adapter);
 	}
 	
 	public Object getBean(String id, Class className) {
