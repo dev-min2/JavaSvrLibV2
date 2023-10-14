@@ -7,12 +7,12 @@ import java.util.Map;
 
 public class MessageInfo {
 	private Calendar packetArriveTime = null;
-	// DispatchBot에서 던져누는 sessionData
-	private Map<String,Object> sessionDataByJsonKey = new HashMap<String,Object>();
+	// DispatchBot에서 던져주는 sessionData
+	private Map<String,Object> sessionDataByJsonKey = null;
 	
 	public MessageInfo(Map<String,Object> sessionDataByJsonKey) {
 		packetArriveTime = Calendar.getInstance();
-		this.sessionDataByJsonKey = sessionDataByJsonKey;
+		this.sessionDataByJsonKey = sessionDataByJsonKey; 
 	}
 	
 	public Object getParameter(String key) {
@@ -33,9 +33,5 @@ public class MessageInfo {
 	
 	public void deleteSession() {
 		sessionDataByJsonKey = null;
-	}
-	
-	public Map<String,Object> getSessionData() {
-		return sessionDataByJsonKey;
 	}
 }

@@ -3,8 +3,6 @@ package CoreAcitive;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.json.simple.JSONObject;
-
 import PacketUtils.Packet;
 
 public class DispatcherBot {
@@ -15,7 +13,7 @@ public class DispatcherBot {
 	private HandlerAdapter handlerAdapter = new HandlerAdapter();
 	private HandlerMapping handlerMapping = new HandlerMapping();
 	
-	//Session의 정보를 담는 곳
+	//Session의 정보를 담는 곳(공유하는데이터이므로 Lock필요!)
 	private Map<Integer, HashMap<String,Object>> jsonSessionDataBySessionID = new HashMap<Integer,HashMap<String,Object>>();
 	private Object sessionMapLock = new Object();
 	
@@ -70,23 +68,14 @@ public class DispatcherBot {
 		}
 		
 		MessageInfo msgInfo = new MessageInfo(sessionDataByJsonKey);
-		ackPacket = handlerAdapter.requestProcessing(protocol,controller, requestPacket, msgInfo);
-		
-		// 요청 처리에서 세션을 무효화했따면 지워준다.
-		if(msgInfo.getSessionData() == null) {
-			synchronized(sessionMapLock) {
-				if(jsonSessionDataBySessionID.containsKey(sessionId)) {
-					jsonSessionDataBySessionID.remove(sessionId);
-				}
-			}
-		}
+		ackPacket = handlerAdapter.requestProcessing(protocol, controller, requestPacket, msgInfo);
 		
 		return ackPacket;
 	}
 	
 	public void closeSession(Integer sessionId) {
-		if(jsonSessionDataBySessionID.containsKey(sessionId)) {
-			synchronized(sessionMapLock) {
+		synchronized(sessionMapLock) {
+			if(jsonSessionDataBySessionID.containsKey(sessionId)) {
 				jsonSessionDataBySessionID.remove(sessionId);
 			}
 		}
