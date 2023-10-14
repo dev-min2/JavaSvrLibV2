@@ -3,7 +3,7 @@ package PacketUtils;
 import java.util.AbstractMap;
 
 public class Packet {
-	public static final int PACKET_MIN_LEN = 4; // ∆–≈∂ «Ï¥ı packetSize
+	public static final int PACKET_MIN_LEN = 4; // Ìå®ÌÇ∑Ìó§Îçî
 	public static final int PACKET_CHECK = 2;
 	
 	protected short packetSize = 0;

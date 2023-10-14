@@ -3,18 +3,20 @@ package CoreAcitive;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.json.simple.JSONObject;
+
 import PacketUtils.Packet;
 
 public class DispatcherBot {
 	private static DispatcherBot inst = null;
 	private static Object instLock = new Object();
 	
-	// Æ¯¼ö ºó
+	// íŠ¹ìˆ˜ ë¹ˆ
 	private HandlerAdapter handlerAdapter = new HandlerAdapter();
 	private HandlerMapping handlerMapping = new HandlerMapping();
 	
-	//SessionÀÇ Á¤º¸¸¦ ´ã´Â °÷
-	private Map<Integer, HashMap<String,String>> jsonSessionDataBySessionID = new HashMap<Integer,HashMap<String,String>>();
+	//Sessionì˜ ì •ë³´ë¥¼ ë‹´ëŠ” ê³³
+	private Map<Integer, HashMap<String,Object>> jsonSessionDataBySessionID = new HashMap<Integer,HashMap<String,Object>>();
 	private Object sessionMapLock = new Object();
 	
 	private DispatcherBot() {}
@@ -34,7 +36,7 @@ public class DispatcherBot {
 		BeanContainer.getBeanContainer().init(handlerMapping, handlerAdapter);
 	}
 	
-	// ¾²·¹µå¿¡ ¾ÈÀüÇÒ±î? 
+	// ì“°ë ˆë“œì— ì•ˆì „í• ê¹Œ?
 	public Packet dispatch(Packet requestPacket, Integer sessionId) throws Exception {
 		Packet ackPacket = null;
 		
@@ -56,19 +58,28 @@ public class DispatcherBot {
 			return ackPacket;
 		
 		
-		// ÇØ´ç ÇØ½Ã Å×ÀÌºí ÀÚÃ¼ÀÇ write¿Í read´Â Lock.
-		// ÇØ½ÃÅ×ÀÌºíÀÇ key¿¡ ¸ÅÄªµÇ´Â value´Â LockÀ» ÇÏÁö¾Ê´Â´Ù.
-		// ÇØ´ç value´Â ÇöÀç ±¸Á¶·Î¼­ Session º»ÀÎ¸¸ÀÌ read&write¸¦ ÇÒ ¼ö ÀÖÀ½(Áï ´Ù¸¥ ½º·¹µå °æÇÕx)
-		HashMap<String,String> sessionDataByJsonKey = null;
+		// í•´ë‹¹ í•´ì‹œ í…Œì´ë¸” ìì²´ì˜ writeì™€ readëŠ” lock.
+		// í•´ì‹œí…Œì´ë¸”ì˜ keyì— ë§¤ì¹­ë˜ëŠ” valueëŠ” Lockì„ í•˜ì§€ì•ŠëŠ”ë‹¤.
+		// í•´ë‹¹ valueëŠ” í˜„ì¬ êµ¬ì¡°ë¡œì„œ Session ë³¸ì¸ë§Œì´(í•´ë‹¹ Sessionì„ ì²˜ë¦¬í•˜ëŠ” ìŠ¤ë ˆë“œë§Œì´) read&writeê°€ ê°€ëŠ¥. 
+		HashMap<String,Object> sessionDataByJsonKey = null;
 		synchronized(sessionMapLock) {
 			if(!jsonSessionDataBySessionID.containsKey(sessionId)) {
-				jsonSessionDataBySessionID.put(sessionId, new HashMap<String,String>());
+				jsonSessionDataBySessionID.put(sessionId, new HashMap<String,Object>());
 			}
 			sessionDataByJsonKey = jsonSessionDataBySessionID.get(sessionId);
 		}
 		
 		MessageInfo msgInfo = new MessageInfo(sessionDataByJsonKey);
 		ackPacket = handlerAdapter.requestProcessing(protocol,controller, requestPacket, msgInfo);
+		
+		// ìš”ì²­ ì²˜ë¦¬ì—ì„œ ì„¸ì…˜ì„ ë¬´íš¨í™”í–ˆë”°ë©´ ì§€ì›Œì¤€ë‹¤.
+		if(msgInfo.getSessionData() == null) {
+			synchronized(sessionMapLock) {
+				if(jsonSessionDataBySessionID.containsKey(sessionId)) {
+					jsonSessionDataBySessionID.remove(sessionId);
+				}
+			}
+		}
 		
 		return ackPacket;
 	}

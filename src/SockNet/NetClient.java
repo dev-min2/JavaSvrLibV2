@@ -9,6 +9,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+import CoreAcitive.DispatcherBot;
 import PacketUtils.Packet;
 import PacketUtils.PacketUtil;
 
@@ -31,9 +32,6 @@ public class NetClient implements Closeable {
 		os = socket.getOutputStream();
 	}
 	
-	// ÆÐÅ¶ 2°³·ÎÃ¼Å©.
-	// ÆÐÅ¶ 1°³ + ÆÐÅ¶¹Ì¿Ï¼º bytes µµÂø½Ã Ã³¸® -> È®ÀÎ¿Ï·á.
-	// ÆÐÅ¶ 2°³ µ¿½Ã¿¡ Ã³¸® -> È®ÀÎ¿Ï·á.
 	public List<Packet> recv() throws Exception {
 		List<Packet> packetList = new ArrayList<Packet>(3);
 		
@@ -50,7 +48,7 @@ public class NetClient implements Closeable {
 			if((readSize + bufferRemainlen) < Packet.PACKET_MIN_LEN)
 				break;
 			
-			// ÃÖ¼Ò 4¹ÙÀÌÆ® ÀÐÀ» ¼ö ÀÖÀ½.
+			// ìµœì†Œ 4ë°”ì´íŠ¸(íŒ¨í‚·í—¤ë”) ì½ì„ ìˆ˜ ìžˆìŒ
 			int packetLenIndex = pos + Packet.PACKET_CHECK; 
 			short packetLen = 0;
 			
@@ -60,7 +58,7 @@ public class NetClient implements Closeable {
 			if((readSize + bufferRemainlen) < packetLen)
 				break;
 			
-			// ¿©±â±îÁö ¿À¸é Á¤»óÀûÀÎ ÇÏ³ªÀÇ ÆÐÅ¶À» ¸¸µé ¼ö ÀÖÀ½.
+			// ì—¬ê¸°ê¹Œì§€ ì˜¤ë©´ ì •ìƒì ì¸ í•˜ë‚˜ì˜ íŒ¨í‚·ì„ ë§Œë“¤ ìˆ˜ ìžˆìŒ.
 			byte[] packetBuffer = new byte[packetLen];
 			System.arraycopy(buffer, pos, packetBuffer, 0, packetLen);
 			

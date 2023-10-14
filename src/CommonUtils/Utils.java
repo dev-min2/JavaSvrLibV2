@@ -28,7 +28,7 @@ public final class Utils {
 		return (info[0] * 10000) + (info[1] * 100) + info[2];
 	}
 	
-	// ÇØ´çÁÖÀÇ ±âÁØÁ¡ÀÌ µÇ´Â WeekID¸¦ ±¸ÇÑ´Ù.
+	// í•´ë‹¹ì£¼ì˜ ê¸°ì¤€ì ì´ ë˜ëŠ” WeekIDë¥¼ êµ¬í•œë‹¤.
 	public static int getWeekID(Calendar time, int dayOfWeek) {
 		if(time == null)
 			return 0;

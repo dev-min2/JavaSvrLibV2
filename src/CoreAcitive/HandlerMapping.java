@@ -10,8 +10,7 @@ import java.util.stream.Collectors;
 
 
 public class HandlerMapping {
-	// ¿äÃ»¿¡ ¸Â´Â Controller
-	// ¸®ÆÑÅä¸µ ´ë»ó..
+	// ìš”ì²­ì— ë§ëŠ” Controller
 	private Map<String,Object> controllerByRequestURL = null;
 	
 	public HandlerMapping() {
@@ -19,21 +18,21 @@ public class HandlerMapping {
 	}
 		
 	public void init(HashMap<AbstractMap.SimpleEntry<String, Class>,Object> beanObjByIdClass, HandlerAdapter adpater) {
-		// ControllerÀÎ BeanµéÀ» Ã£°í, HandlerMapping¿¡ ¿«¾îÁØ´Ù.
+		// Controllerì¸ Beanë“¤ì„ ì°¾ê³  HandlerMappingì— ì—®ì–´ì¤€ë‹¤.
 		List<Object> controllerList = beanObjByIdClass.entrySet().
 								 						 stream().
 								 						 map(entry -> entry.getValue()).
 								 						 filter(obj -> obj.getClass().getAnnotation(Controller.class) != null).
 								 						 collect(Collectors.toList());
 		
-		// ¿äÃ» ÇÁ·ÎÅäÄİ¿¡ ¸Â´Â ÄÁÆ®·Ñ·¯ ¹İÈ¯À» À§ÇÑ Ã³¸®. (MultiKeyMap »ç¿ë?)		
+		// ìš”ì²­ í”„ë¡œí† ì½œì— ë§ëŠ” ì»¨íŠ¸ë¡¤ëŸ¬ ë°˜í™˜ì²˜ë¦¬	
 		for(Object controllerObj : controllerList) {
 			Method[] methods = controllerObj.getClass().getDeclaredMethods();
-			List<String> requestKeys = new ArrayList<String>(methods.length); // ÃÖ¼Ò ¸Ş¼Òµå¼ö¸¸Å­ Capacity.
+			List<String> requestKeys = new ArrayList<String>(methods.length); // ìµœì†Œ ë©”ì†Œë“œìˆ˜ë§Œí¼ì˜ Capacity
 			for(Method m : methods) {
 				var checkAnnotationMethod = m.getAnnotation(RequestMapping.class);
 				if(checkAnnotationMethod != null) {
-					requestKeys.add(checkAnnotationMethod.value()); // ¿äÃ» Value
+					requestKeys.add(checkAnnotationMethod.value()); // ìš”ì²­ Value
 				}
 			}
 			

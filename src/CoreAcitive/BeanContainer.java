@@ -4,14 +4,13 @@ import java.util.AbstractMap;
 import java.util.HashMap;
 
 /*
-°´Ã¼(Bean)µéÀ» °ü¸®ÇÏ´Â ÄÁÅ×ÀÌ³Ê.
+ê°ì²´(Bean)ë“¤ì„ ê´€ë¦¬í•˜ëŠ” ì»¨í…Œì´ë„ˆ
 */
 public class BeanContainer {
 	private static BeanContainer instance = null;
 	private static Object instLock = new Object();
 	
-	//private ApplicationBeanLoader beanLoader = null;
-	// ½ÇÁ¦ Bean°´Ã¼°¡ ´ã±â´Â °÷. -> ¿ÜºÎ¿¡¼­ Á¢±Ù °¡´ÉÇØ¾ßÇÏ´Â°¡? ¤·¤·
+	// ì‹¤ì œ Beanê°ì²´ê°€ ë‹´ê¸°ëŠ” ê³³. 
 	private HashMap<AbstractMap.SimpleEntry<String, Class>,Object> beanObjByIdClass = null;
 	
 	private BeanContainer() {}

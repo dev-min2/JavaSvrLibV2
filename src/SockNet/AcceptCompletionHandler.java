@@ -11,12 +11,12 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
 
-// AcceptÃ³¸®.
+// Accept ì²˜ë¦¬
 public class AcceptCompletionHandler implements CompletionHandler<AsynchronousSocketChannel, Void>, Closeable {
 	private InetSocketAddress addr;
 	private AsynchronousChannelGroup channelGroup;
 	
-	//Å¬¶óÀÌ¾ğÆ® ¿¬°á ¼ö¶ô
+	// í´ë¼ì´ì–¸íŠ¸ ì—°ê²°ìˆ˜ë½
 	private AsynchronousServerSocketChannel asyncServerSocketChannel;
 	private final AtomicInteger sessionCnt = new AtomicInteger(0);
 	private HashMap<Integer,Session> sessionByID = new HashMap<Integer,Session>();
@@ -68,7 +68,7 @@ public class AcceptCompletionHandler implements CompletionHandler<AsynchronousSo
 			e.printStackTrace();
 		}
 		finally {
-			accept(); // ´Ù½Ã accept Ã³¸®.
+			accept(); // ë‹¤ì‹œ acceptì²˜ë¦¬.
 		}
 	}
 

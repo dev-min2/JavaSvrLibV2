@@ -156,6 +156,7 @@ public class Session {
 	
 	public void closeSession() {
 		try {
+			DispatcherBot.getDispatcherBot().closeSession(sessionId);
 			socketChannel.close();
 		}
 		catch(Exception e) {

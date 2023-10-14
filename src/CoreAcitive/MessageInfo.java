@@ -4,22 +4,22 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
+
 public class MessageInfo {
-	// µµÂøÇÑ ½Ã°£
 	private Calendar packetArriveTime = null;
-	// SessionÁ¤º¸.
-	private Map<String,String> sessionDataByJsonKey = new HashMap<String,String>();
+	// DispatchBotì—ì„œ ë˜ì ¸ëˆ„ëŠ” sessionData
+	private Map<String,Object> sessionDataByJsonKey = new HashMap<String,Object>();
 	
-	public MessageInfo(Map<String,String> sessionDataByJsonKey) {
+	public MessageInfo(Map<String,Object> sessionDataByJsonKey) {
 		packetArriveTime = Calendar.getInstance();
 		this.sessionDataByJsonKey = sessionDataByJsonKey;
 	}
 	
-	public String getParameter(String key) {
+	public Object getParameter(String key) {
 		return sessionDataByJsonKey.get(key);
 	}
 	
-	public void setParameter(String key, String value) {
+	public void setParameter(String key, Object value) {
 		sessionDataByJsonKey.put(key, value);
 	}
 	
@@ -29,5 +29,13 @@ public class MessageInfo {
 	
 	public Calendar getNow() {
 		return packetArriveTime;
+	}
+	
+	public void deleteSession() {
+		sessionDataByJsonKey = null;
+	}
+	
+	public Map<String,Object> getSessionData() {
+		return sessionDataByJsonKey;
 	}
 }

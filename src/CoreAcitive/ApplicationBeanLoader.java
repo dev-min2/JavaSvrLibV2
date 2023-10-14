@@ -17,7 +17,7 @@ import org.xml.sax.InputSource;
 
 
 /*
-IoC/DI¸¦ À§ÇØ µî·ÏµÈ XMLÁ¤º¸¸¦ ÆÄ½ÌÇÏ¿© »ç¿ë.
+IoC/DIë¥¼ ìœ„í•´ ë“±ë¡ëœ xmlì •ë³´ë¥¼ íŒŒì‹±
 */
 public final class ApplicationBeanLoader {
 	private ApplicationBeanLoader() {}
@@ -25,7 +25,7 @@ public final class ApplicationBeanLoader {
 	@SuppressWarnings("null")
 	public static HashMap<AbstractMap.SimpleEntry<String, Class>,Object> parseBean() throws Exception {
 		var ret = new HashMap<AbstractMap.SimpleEntry<String, Class>,Object>();
-		// Class ÆÄ½Ì¿ëÀ¸·Î Àá±ñ ÀÌ¿ëÇÑ´Ù.
+		// Class íŒŒì‹±ìš©
 		HashMap<String,Class> temp = new HashMap<String,Class>();
 		
 		String accessXmlPath = "resource/beanText.xml";
@@ -58,13 +58,13 @@ public final class ApplicationBeanLoader {
 					if(id == null || id.isEmpty() || className == null || className.isEmpty())
 						throw new Exception("bean xml error(id == null || id.isEmpty() || className == null || className.isEmpty())");
 					
-					// ÇØ´çÇÏ´Â Å¬·¡½º°¡ ¾ø´Ù¸é ¿©±â¼­ Exception ¹ß»ı.
+					// í•´ë‹¹í•˜ëŠ” í´ë˜ìŠ¤ê°€ ì—†ë‹¤ë©´ ì—¬ê¸°ì„œ Exception.
 					Class match = Class.forName(className);
 					
-					// ºó °´Ã¼ÀÇ ÇÏÀ§ ³ëµå
+					// Bean ê°ì²´ì˜ í•˜ìœ„ ë…¸ë“œ
 					NodeList beanChildNodeList = xmlNode.getChildNodes();
 					
-					// ÀÇÁ¸¼º ÁÖÀÔ(DI -> ÇöÀç´Â »ı¼ºÀÚ ÁÖÀÔ¸¸)
+					// ì˜ì¡´ì„± ì£¼ì…(DI / í˜„ì¬ëŠ” ìƒì„±ìë¥¼ í†µí•œ ì£¼ì…ë§Œ ìˆìŒ)
 					if(beanChildNodeList.getLength() > 0) {
 						Class[] refClassArray = new Class[match.getDeclaredConstructors()[0].getParameterCount()];
 						String[] refIDs = new String[refClassArray.length];
@@ -90,7 +90,7 @@ public final class ApplicationBeanLoader {
 						obj = constructor.newInstance(argumentObject);
 					}
 					else {
-						// ±âº» »ı¼ºÀÚ(ÁÖÀÔx)
+						// ê¸°ë³¸ ìƒì„±ì(ì£¼ì…ì—†ëŠ”ê²ƒë“¤)
 						obj = match.getDeclaredConstructor().newInstance();
 					}
 					

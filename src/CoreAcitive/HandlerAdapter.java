@@ -30,7 +30,7 @@ public class HandlerAdapter {
 	}
 
 	public Packet requestProcessing(String protocol, Object controller, Packet requestPacket, MessageInfo msgInfo) throws Exception {
-		// ¾Õ¿¡¼­ À¯È¿¼º °Ë»çÇßÀ¸´Ï µû·Î ¸Å°³º¯¼ö À¯È¿°Ë»ç ÇÏÁö¾ÊÀ½.
+		// ì•ì—ì„œ ìœ íš¨ì„± ê²€ì‚¬í–ˆìœ¼ë‹ˆ ë”°ë¡œ ë§¤ê°œë³€ìˆ˜ ìœ íš¨ê²€ì‚¬ x
 		Method method = requestMethodByProtocol.get(protocol);
 		if(method == null)
 			return null;
