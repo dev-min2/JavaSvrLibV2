@@ -1,15 +1,15 @@
 package CoreAcitive;
 
 import java.io.FileReader;
+import java.io.InputStream;
 import java.lang.reflect.Constructor;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.AbstractMap;
 import java.util.HashMap;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -27,23 +27,27 @@ public final class ApplicationBeanLoader {
 		var ret = new HashMap<AbstractMap.SimpleEntry<String, Class>,Object>();
 		// Class 파싱용
 		HashMap<String,Class> temp = new HashMap<String,Class>();
-		
-		String accessXmlPath = "resource/beanText.xml";
-		
-		Path currentRelativePath = Paths.get("");
-		String currentAbsoulutePath = currentRelativePath.toAbsolutePath().toString();
-		
-		String[] splitArray = currentAbsoulutePath.split("\\\\");
-		if(splitArray[splitArray.length - 1].equals("bin")) {
-			accessXmlPath = "../resource/beanText.xml";
-		}
+		String accessXmlPath = "resources/staticFiles/bean.xml";
 		
 		Document xml = null;
-		InputSource is = new InputSource(new FileReader(accessXmlPath));
+		InputSource is = null; 
+		
+		// resource폴더가 jar로 나올 때 제거되어서 분리..
+		java.io.File file = new java.io.File(accessXmlPath);
+		if(!file.exists()) {
+			InputStream inputStream = ApplicationBeanLoader.class.getClassLoader().getResourceAsStream("staticFiles/bean.xml");
+			is = new InputSource(inputStream);
+		}
+		else 
+			is = new InputSource(new FileReader(accessXmlPath));
+		
 		xml = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(is);
 		xml.getDocumentElement().normalize();
+		
+		// 클래스 기본경로
+		Element root = xml.getDocumentElement(); // 최상위 노드
 
-		NodeList childNodelist = xml.getDocumentElement().getElementsByTagName("bean");		
+		NodeList childNodelist = root.getElementsByTagName("bean");
 		if(childNodelist.getLength() > 0) {
 			for(int nodeIndex = 0; nodeIndex < childNodelist.getLength(); ++nodeIndex) {
 				Node xmlNode = childNodelist.item(nodeIndex);

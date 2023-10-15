@@ -53,7 +53,7 @@ public class PacketUtil
 		return GeneratePacket(bytes, packetSize);
 	}
 	
-
+	
 	private static byte[] Serialize(Object object) throws IOException {
 		if(object == null)
 			return null;
