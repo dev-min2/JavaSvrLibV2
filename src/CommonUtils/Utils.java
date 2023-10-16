@@ -27,6 +27,7 @@ public final class Utils {
 		
 		return (info[0] * 10000) + (info[1] * 100) + info[2];
 	}
+
 	
 	// 해당주의 기준점이 되는 WeekID를 구한다.
 	public static int getWeekID(Calendar time, int dayOfWeek) {
@@ -46,6 +47,33 @@ public final class Utils {
 		retTime.add(Calendar.DAY_OF_WEEK, -diffDayOfWeek);
 		
 		return getDayID(retTime);
+	}
+	
+	public static boolean isDouble(String value) {
+		if(value == null || value.isEmpty())
+			return false;
+		
+		try {
+			Double.parseDouble(value);
+		}
+		catch(Exception e) {
+			return false;
+		}
+		return true;
+	}
+	
+	public static boolean isInt(String value) {
+		if(value == null || value.isEmpty())
+			return false;
+		
+		try {
+			Integer.parseInt(value);
+		}
+		catch(Exception e) {
+			return false;
+		}
+		
+		return true;
 	}
 	
 	private static int[] getTimeInfo(Calendar time) {

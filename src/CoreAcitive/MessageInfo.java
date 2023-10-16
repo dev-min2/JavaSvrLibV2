@@ -8,18 +8,18 @@ import java.util.Map;
 public class MessageInfo {
 	private Calendar packetArriveTime = null;
 	// DispatchBot에서 던져주는 sessionData
-	private Map<String,Object> sessionDataByJsonKey = null;
+	private Map<String,String> sessionDataByJsonKey = null;
 	
-	public MessageInfo(Map<String,Object> sessionDataByJsonKey) {
+	public MessageInfo(Map<String,String> sessionDataByJsonKey) {
 		packetArriveTime = Calendar.getInstance();
 		this.sessionDataByJsonKey = sessionDataByJsonKey; 
 	}
 	
-	public Object getParameter(String key) {
+	public String getParameter(String key) {
 		return sessionDataByJsonKey.get(key);
 	}
 	
-	public void setParameter(String key, Object value) {
+	public void setParameter(String key, String value) {
 		sessionDataByJsonKey.put(key, value);
 	}
 	
