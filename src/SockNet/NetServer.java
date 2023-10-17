@@ -40,7 +40,7 @@ public final class NetServer implements Closeable {
 		acceptHandler.accept();
 		
 		System.out.println("Server OK.");
-		// start Server를 호출한 메인 쓰레드의 제어권 뻇어가기?
+		// start Server를 호출한 메인 쓰레드의 제어권 뻇어가기? todo
 		
 	}
 	
