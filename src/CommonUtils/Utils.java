@@ -1,6 +1,15 @@
 package CommonUtils;
 
+import java.io.FileReader;
+import java.io.InputStream;
 import java.util.Calendar;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+
+import CoreAcitive.ApplicationBeanLoader;
 
 public final class Utils {
 	private static final int WEEKID_OFFSET_MONDAY = 2;
@@ -78,5 +87,35 @@ public final class Utils {
 	
 	private static int[] getTimeInfo(Calendar time) {
 		return new int[] { time.get(Calendar.YEAR), time.get(Calendar.MONTH) + 1, time.get(Calendar.DAY_OF_MONTH)};
+	}
+	
+	// resources/staticFiles가 기본경로.
+	public static Document getXmlDoc(String fileName) {
+		if(fileName == null || fileName.isEmpty())
+			return null;
+		
+		Document xml = null;
+		InputSource is = null;
+		
+		String accessXmlPath = "resources/staticFiles/";
+		accessXmlPath += fileName;
+		try {
+			// resource폴더가 jar로 나올 때 제거되어서 분리..
+			java.io.File file = new java.io.File(accessXmlPath);
+			if(!file.exists()) {
+				InputStream inputStream = ApplicationBeanLoader.class.getClassLoader().getResourceAsStream("staticFiles/" + fileName);
+				is = new InputSource(inputStream);
+			}
+			else 
+				is = new InputSource(new FileReader(accessXmlPath));
+			
+			xml = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(is);
+			xml.getDocumentElement().normalize();	
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		return xml;
 	}
 }

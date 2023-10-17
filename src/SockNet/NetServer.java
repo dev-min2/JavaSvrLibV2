@@ -8,6 +8,7 @@ import java.nio.channels.AsynchronousChannelGroup;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.util.concurrent.Executors;
 
+import CommonUtils.DBConnectionPool;
 import CoreAcitive.DispatcherBot;
 
 /*
@@ -21,6 +22,7 @@ public final class NetServer implements Closeable {
 	// Core
 	public NetServer(int port) throws Exception {
 		DispatcherBot.getDispatcherBot().init();
+		DBConnectionPool.getInstance().init();
 		
 		// Network 처리
 		InetAddress temp = null;

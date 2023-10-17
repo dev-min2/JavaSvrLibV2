@@ -35,9 +35,11 @@ public final class ApplicationBeanLoader {
 		HashMap<String,Class> temp = new HashMap<String,Class>();
 
 		// 클래스 기본경로
-		Document xml = getXML();
+		Document xml = Utils.getXmlDoc("bean.xml");
+		if(xml == null)
+			throw new Exception("Not exist bean.xml");
+		
 		Element root = xml.getDocumentElement(); // 최상위 노드
-
 		NodeList childNodelist = root.getElementsByTagName("bean");
 		if(childNodelist.getLength() > 0) {
 			for(int nodeIndex = 0; nodeIndex < childNodelist.getLength(); ++nodeIndex) {
@@ -128,28 +130,6 @@ public final class ApplicationBeanLoader {
 		
 		
 		return ret;
-	}
-
-	private static Document getXML() throws SAXException, IOException, ParserConfigurationException {
-		Document xml = null;
-		InputSource is = null;
-		
-		String accessXmlPath = "resources/staticFiles/bean.xml";
-		
-		// resource폴더가 jar로 나올 때 제거되어서 분리..
-		java.io.File file = new java.io.File(accessXmlPath);
-		if(!file.exists()) {
-			InputStream inputStream = ApplicationBeanLoader.class.getClassLoader().getResourceAsStream("staticFiles/bean.xml");
-			is = new InputSource(inputStream);
-		}
-		else 
-			is = new InputSource(new FileReader(accessXmlPath));
-		
-		
-		xml = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(is);
-		xml.getDocumentElement().normalize();
-		
-		return xml;
 	}
 }
 
