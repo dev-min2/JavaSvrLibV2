@@ -103,7 +103,7 @@ public final class Utils {
 			// resource폴더가 jar로 나올 때 제거되어서 분리..
 			java.io.File file = new java.io.File(accessXmlPath);
 			if(!file.exists()) {
-				InputStream inputStream = ApplicationBeanLoader.class.getClassLoader().getResourceAsStream("staticFiles/" + fileName);
+				InputStream inputStream = ApplicationBeanLoader.class.getClassLoader().getResourceAsStream(fileName);
 				is = new InputSource(inputStream);
 			}
 			else 
