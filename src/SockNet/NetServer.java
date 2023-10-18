@@ -17,7 +17,7 @@ import CoreAcitive.DispatcherBot;
 
 public final class NetServer implements Closeable {
 	// accept 핸들러
-	AcceptCompletionHandler acceptHandler = null;
+	private AcceptCompletionHandler acceptHandler = null;
 	
 	// Core
 	public NetServer(int port) throws Exception {
@@ -40,9 +40,11 @@ public final class NetServer implements Closeable {
 		acceptHandler.accept();
 		
 		System.out.println("Server OK.");
-		// start Server를 호출한 메인 쓰레드의 제어권 뻇어가기? todo
+		
 		
 	}
+	
+	
 	
 	@Override
 	public void close() throws IOException {

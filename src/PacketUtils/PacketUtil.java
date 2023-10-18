@@ -7,9 +7,21 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.nio.ByteBuffer;
 
+import CoreAcitive.AckInfo;
+import CoreAcitive.Controller;
+
 public class PacketUtil
 {
 	private PacketUtil() {}
+	
+	public static void addInfoPacket(Packet packet) throws IOException {
+		int ackProtocol = Integer.parseInt(packet.getClass().getAnnotation(AckInfo.class).value());
+		byte[] objectArray = Serialize(packet);
+		
+		final short PACKET_SIZE = (short)(Packet.PACKET_MIN_LEN + objectArray.length);
+		
+		packet.setPacketInfo(PACKET_SIZE, (short)ackProtocol);
+	}
 	
 	public static byte[] genPacketBuffer(int protocols, Object object) throws Exception
 	{

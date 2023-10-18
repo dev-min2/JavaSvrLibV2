@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.LinkedList;
+import java.util.Queue;
 
 import CoreAcitive.DispatcherBot;
 import PacketUtils.Packet;
@@ -27,26 +28,31 @@ public class Session {
 	// 요청 -> 데이터 수신&처리 -> 재요청
 	void registerReceive() {
 		ByteBuffer byteBuffer = recvBuffer.getBuffer();
-		socketChannel.read(byteBuffer, byteBuffer, new CompletionHandler<Integer, ByteBuffer>(){
+		RecvAttachment attach = new RecvAttachment(byteBuffer, this, recvBuffer);
+		socketChannel.read(byteBuffer, attach, new CompletionHandler<Integer, RecvAttachment>(){
 			@Override
-			public void completed(Integer result, ByteBuffer attachment) {
+			public void completed(Integer result, RecvAttachment attachment) {
+				Session thisSession = attachment.getSession();
+				ByteBuffer completeBuffer = attachment.getRecvBuffer();
+				RingBuffer thisRingBuffer = attachment.getRingBuffer();
+				
 				if(result == -1) {
-					closeSession();
+					thisSession.closeSession();
 					return;
 				}
 				
 				try {
 					int readSize = 0; // 실제 읽은 총량(all amount)사이즈
 					int recvLen = 0; // 남은 패킷 길이.
-					attachment.flip();
+					completeBuffer.flip();
 					
 					// 이전에 남은 데이터가 있다면
-					int remainLen = recvBuffer.getRemainLen(); // 이전에 남은 데이터가 있는지 체크
-					int pos = recvBuffer.getPosition() - remainLen; // 현재 읽어야할 위치.
-					byte[] buffer = attachment.array(); // 원본 버퍼.
+					int remainLen = thisRingBuffer.getRemainLen(); // 이전에 남은 데이터가 있는지 체크
+					int pos = thisRingBuffer.getPosition() - remainLen; // 현재 읽어야할 위치.
+					byte[] buffer = completeBuffer.array(); // 원본 버퍼.
 					while(true) {
 						// 수신한 버퍼 데이터의 크기.(이미 읽은건 뺴준다)
-						recvLen = attachment.limit() - readSize;
+						recvLen = completeBuffer.limit() - readSize;
 						
 						// 더이상 읽을게 없다면
 						if(recvLen <= 0)
@@ -67,15 +73,17 @@ public class Session {
 						
 						// 여기까지 오면 정상적인 하나의 패킷을 만들 수 있음.
 						byte[] packetBuffer = new byte[packetLen];
-						recvBuffer.readBuffer(packetLen - remainLen); 						
+						thisRingBuffer.readBuffer(packetLen - remainLen); 						
 						System.arraycopy(buffer, pos, packetBuffer, 0, packetLen);
 						
 						Packet packet = PacketUtil.convertPacketFromBytes(packetBuffer);
 						// 실제 패킷처리.
 						if(packet != null) {
-							Packet ackPacket = DispatcherBot.getDispatcherBot().dispatch(packet, sessionId);
-							if(ackPacket != null)
-								send(ackPacket);
+							Packet ackPacket = DispatcherBot.getDispatcherBot().dispatch(packet, thisSession.getSessionId());
+							if(ackPacket != null) {
+								PacketUtil.addInfoPacket(ackPacket);
+								thisSession.send(ackPacket);
+							}
 						}
 												
 						readSize += packetLen;
@@ -86,24 +94,28 @@ public class Session {
 							remainLen = 0;
 					}
 					if(recvLen <= 0)
-						recvBuffer.clean(); // 버퍼 초기화
+						thisRingBuffer.clean(); // 버퍼 초기화
 					else {
-						recvBuffer.setPosition(readSize + recvLen); // Position 이동해줘야 해당 Position뒤로 데이터가 들어온다.  
-						recvBuffer.setRemainLen(recvLen); // 처리되지 못하고, 남은 데이터
+						thisRingBuffer.setPosition(readSize + recvLen); // Position 이동해줘야 해당 Position뒤로 데이터가 들어온다.  
+						thisRingBuffer.setRemainLen(recvLen); // 처리되지 못하고, 남은 데이터
 					}
 					
-					ByteBuffer byteBuffer2 = recvBuffer.getBuffer();
-					socketChannel.read(byteBuffer2, byteBuffer2, this); //데이터 다시 읽기 요청
+					//ByteBuffer byteBuffer2 = recvBuffer.getBuffer();
+					ByteBuffer reBuffer = thisRingBuffer.getBuffer();
+					RecvAttachment reAttach = new RecvAttachment(thisRingBuffer.getBuffer(), thisSession, thisRingBuffer);
+					socketChannel.read(reBuffer,reAttach, this);
+					//thisSession.getChannel().read(thisRingBuffer.getBuffer(), thisRingBuffer)
+					//socketChannel.read(byteBuffer2, byteBuffer2, this); //데이터 다시 읽기 요청
 				}
 				catch(Exception e) {
 					e.printStackTrace();
-					closeSession();
+					thisSession.closeSession();
 				}
 			}
 
 			@Override
-			public void failed(Throwable exc, ByteBuffer attachment) {
-				closeSession();
+			public void failed(Throwable exc, RecvAttachment attachment) {
+				attachment.getSession().closeSession();
 			}
 		});
 	}
@@ -162,5 +174,9 @@ public class Session {
 		catch(Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public AsynchronousSocketChannel getChannel() {
+		return socketChannel;
 	}
 }
