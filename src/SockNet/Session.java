@@ -75,7 +75,7 @@ public class Session {
 						if(packet != null) {
 							Packet ackPacket = DispatcherBot.getDispatcherBot().dispatch(packet, sessionId);
 							if(ackPacket != null)
-								Session.this.send(ackPacket);
+								send(ackPacket);
 						}
 												
 						readSize += packetLen;
