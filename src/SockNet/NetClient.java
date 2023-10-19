@@ -17,10 +17,8 @@ public class NetClient implements Closeable {
 	private Socket socket = null;
 	private InputStream is = null;
 	private OutputStream os = null;
-	private RingBuffer recvBuffer = null;
 	
 	public NetClient() {
-		recvBuffer = new RingBuffer();
 		socket = new Socket();
 	}
 	
@@ -32,52 +30,54 @@ public class NetClient implements Closeable {
 		os = socket.getOutputStream();
 	}
 	
-	public List<Packet> recv() throws Exception {
-		List<Packet> packetList = new ArrayList<Packet>(3);
+	// 현재구조는 하나의 요청에 대해 하나의 패킷 응답만 오므로 
+	// 해당 패킷을 완전히 수신가능할때까지 처리.
+	public Packet recv() throws Exception {
+		int recvLen = 0;
+		boolean complete = false;
+		Packet packet = null;
+		short packetLen = 0;
 		
-		byte[] buffer = recvBuffer.getArrayBuffer();
-		int bufferPos = recvBuffer.getPosition();
-		int bufferRemainlen = recvBuffer.getRemainLen();
+		List<byte[]> assembleBuffer = new ArrayList<byte[]>();
+		do {
+			byte[] buffer = new byte[1024];
+			recvLen += is.read(buffer);
+			
+			assembleBuffer.add(buffer);
+			// 최소 패킷헤더 읽을 수 있는 사이즈.
+			if(recvLen >= Packet.PACKET_MIN_LEN) {
+				if(packetLen <= 0) { // 한번만 파싱하기 위해서
+					packetLen |= (((short) buffer[Packet.PACKET_CHECK]) << 8) & 0xFF00;
+					packetLen |= (((short) buffer[Packet.PACKET_CHECK + 1])) & 0xFF;
+				}
+				
+				// 온전히 읽을 수 있을 때 파싱
+				if(packetLen <= recvLen) {
+					complete = true;
+					byte[] packetBytes = new byte[packetLen];
+					
+					if(assembleBuffer.size() == 1) { // 1024보다 작다면 하나의 버퍼만 있다는 의미
+						System.arraycopy(assembleBuffer.get(0), 0, packetBytes, 0, packetLen);
+					}
+					else {
+						int pos = 0; // write할 위치
+						for(byte[] buf : assembleBuffer) {
+							// write할 위치가 packetLen보다 길다면
+							if((pos + 1024) > packetLen) { 
+								System.arraycopy(buf, 0, packetBytes, pos, packetLen - pos);
+								break; // 사실상 마지막이어야함.
+							}
+							
+							System.arraycopy(buf, 0, packetBytes, pos, buf.length);
+							pos += buf.length;
+						}
+					}
+					packet = PacketUtil.convertPacketFromBytes(packetBytes);
+				}
+			}
+		}while(!complete);
 		
-		int allAmount = is.read(buffer);
-		int readSize = allAmount;
-		int pos = bufferPos - bufferRemainlen;
-		
-		while(true) {
-			int processLen = 0;
-			if((readSize + bufferRemainlen) < Packet.PACKET_MIN_LEN)
-				break;
-			
-			// 최소 4바이트(패킷헤더) 읽을 수 있음
-			int packetLenIndex = pos + Packet.PACKET_CHECK; 
-			short packetLen = 0;
-			
-			packetLen |= (((short) buffer[packetLenIndex]) << 8) & 0xFF00;
-			packetLen |= (((short) buffer[packetLenIndex + 1])) & 0xFF;
-			
-			if((readSize + bufferRemainlen) < packetLen)
-				break;
-			
-			// 여기까지 오면 정상적인 하나의 패킷을 만들 수 있음.
-			byte[] packetBuffer = new byte[packetLen];
-			System.arraycopy(buffer, pos, packetBuffer, 0, packetLen);
-			
-			packetList.add(PacketUtil.convertPacketFromBytes(packetBuffer));
-			
-			processLen = packetLen;
-			readSize -= processLen;
-			pos += processLen;
-		}
-		
-		if(readSize > 0) {
-			recvBuffer.setRemainLen(readSize);
-			recvBuffer.setPosition(allAmount);
-		}
-		else {
-			recvBuffer.clean();
-		}
-		
-		return packetList;
+		return packet;
 	}
 	
 	public void send(Packet packet) throws Exception {

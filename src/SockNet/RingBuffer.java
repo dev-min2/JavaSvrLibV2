@@ -3,7 +3,7 @@ package SockNet;
 import java.nio.ByteBuffer;
 
 public class RingBuffer {	
-	private static final int DEFAULT_BUFFER_SIZE = 1024 * 10; 
+	private static final int DEFAULT_BUFFER_SIZE = 1024 * 13; 
 
 	private ByteBuffer byteBuffer;
 	private int remainLen = 0;
