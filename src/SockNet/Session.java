@@ -31,7 +31,7 @@ public class Session {
 		socketChannel.read(byteBuffer, byteBuffer, new CompletionHandler<Integer, ByteBuffer>(){
 			@Override
 			public void completed(Integer result, ByteBuffer attachment) {
-				if(result == -1) {
+				if(result < 0) {
 					closeSession();
 					return;
 				}

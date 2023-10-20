@@ -41,7 +41,16 @@ public final class NetServer implements Closeable {
 		
 		System.out.println("Server OK.");
 		
+		//
 		
+		while(true) {
+			try {
+				Thread.currentThread().sleep(1000000);
+			}
+			catch(Exception e) {
+				
+			}
+		}
 	}
 	
 	
