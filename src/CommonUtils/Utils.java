@@ -131,44 +131,44 @@ public final class Utils {
     // byte[] decompressedData = decompress(compressedData, false);
 	
 	// http://www.java2s.com/example/java-book/compressing-byte-arrays.html 해당 코드사용
-	public static byte[] compress(byte[] input, int compressionLevel, boolean GZIPFormat) throws IOException {
-		Deflater compressor = new Deflater(compressionLevel, GZIPFormat);
-		compressor.setInput(input);
-		compressor.finish();
-		
-	    ByteArrayOutputStream bao = new ByteArrayOutputStream();
-	    byte[] readBuffer = new byte[1024];
-	    int readCount = 0;
-	    
-	    while(!compressor.finished()) {
-	    	readCount = compressor.deflate(readBuffer);
-	    	if(readCount > 0) {
-	    		bao.write(readBuffer, 0, readCount);
-	    	}
-	    }
-	    
-	    compressor.end();
-	    
-	    return bao.toByteArray();
-	}
-	
-	public static byte[] decompress(byte[] input, boolean GZIPFormat) throws Exception {
-		Inflater decompressor = new Inflater(GZIPFormat);
-		
-		decompressor.setInput(input);
-		
-		ByteArrayOutputStream bao = new ByteArrayOutputStream();
-		byte[] readBuffer = new byte[1024];
-		int readCount = 0;
-		
-		while(!decompressor.finished()) {
-			readCount = decompressor.inflate(readBuffer);
-			if(readCount > 0) {
-				bao.write(readBuffer, 0, readCount);
-			}
-		}
-		
-		decompressor.end();
-		return bao.toByteArray();
-	}
+//	public static byte[] compress(byte[] input, int compressionLevel, boolean GZIPFormat) throws IOException {
+//		Deflater compressor = new Deflater(compressionLevel, GZIPFormat);
+//		compressor.setInput(input);
+//		compressor.finish();
+//		
+//	    ByteArrayOutputStream bao = new ByteArrayOutputStream();
+//	    byte[] readBuffer = new byte[1024];
+//	    int readCount = 0;
+//	    
+//	    while(!compressor.finished()) {
+//	    	readCount = compressor.deflate(readBuffer);
+//	    	if(readCount > 0) {
+//	    		bao.write(readBuffer, 0, readCount);
+//	    	}
+//	    }
+//	    
+//	    compressor.end();
+//	    
+//	    return bao.toByteArray();
+//	}
+//	
+//	public static byte[] decompress(byte[] input, boolean GZIPFormat) throws Exception {
+//		Inflater decompressor = new Inflater(GZIPFormat);
+//		
+//		decompressor.setInput(input);
+//		
+//		ByteArrayOutputStream bao = new ByteArrayOutputStream();
+//		byte[] readBuffer = new byte[1024];
+//		int readCount = 0;
+//		
+//		while(!decompressor.finished()) {
+//			readCount = decompressor.inflate(readBuffer);
+//			if(readCount > 0) {
+//				bao.write(readBuffer, 0, readCount);
+//			}
+//		}
+//		
+//		decompressor.end();
+//		return bao.toByteArray();
+//	}
 }

@@ -66,7 +66,7 @@ public class PacketUtil
 	}
 	
 	
-	private static byte[] Serialize(Object object) throws IOException {
+	public static byte[] Serialize(Object object) throws IOException {
 		if(object == null)
 			return null;
 		
@@ -80,7 +80,7 @@ public class PacketUtil
 	    } 
 	}
 	
-	private static Object Deserialize(byte[] bytes) throws IOException, ClassNotFoundException {
+	public static Object Deserialize(byte[] bytes) throws IOException, ClassNotFoundException {
 		if(bytes == null)
 			return null;
 		

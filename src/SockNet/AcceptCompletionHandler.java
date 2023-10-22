@@ -7,11 +7,10 @@ import java.nio.channels.AsynchronousChannelGroup;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
+import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 // Accept 처리
 public class AcceptCompletionHandler implements CompletionHandler<AsynchronousSocketChannel, Void>, Closeable {
@@ -42,7 +41,7 @@ public class AcceptCompletionHandler implements CompletionHandler<AsynchronousSo
 				for(Entry<Integer,Session> ety : sessionByID.entrySet()) {
 					Session s = ety.getValue();
 					if(s != null)
-						s.closeSession();
+						closeSession(s.getSessionId());
 				}
 			}
 			try {
@@ -63,7 +62,9 @@ public class AcceptCompletionHandler implements CompletionHandler<AsynchronousSo
 				sessionByID.put(sessionid, session);
 			}
 			
-			session.Init(result, sessionid);
+			System.out.println(result.getRemoteAddress() + " 연결 (" + new Date(System.currentTimeMillis()).toString() + ")");
+			
+			session.Init(result, sessionid, this);
 		} 
 		catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -90,5 +91,17 @@ public class AcceptCompletionHandler implements CompletionHandler<AsynchronousSo
 	public void close() throws IOException {
 		// TODO Auto-generated method stub
 		stop();
+	}
+	
+	public void closeSession(int sessionId) {
+		Session closeSession = null;
+		synchronized(sessionLock) {
+			closeSession = sessionByID.get(sessionId);
+		}
+		
+		if(closeSession == null)
+			return;
+		
+		closeSession.close();
 	}
 }

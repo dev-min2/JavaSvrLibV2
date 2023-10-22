@@ -14,13 +14,15 @@ public class Session {
 	private int sessionId = 0;
 	private AsynchronousSocketChannel socketChannel = null;
 	private RingBuffer recvBuffer = new RingBuffer();
+	private AcceptCompletionHandler handler = null; // closeSession 호출용도로만 쓴다.
 	
 	// 데이터 덩치가 커서 한번에 합치기 혹은 파싱하기 어려운 경우 해당 List에 넣어준다. (아직 미완)
 	private LinkedList<byte[]> assemblePacketList = new LinkedList<byte[]>();
 	
-	public void Init(AsynchronousSocketChannel socketChannel, int sessionId) {
+	public void Init(AsynchronousSocketChannel socketChannel, int sessionId, AcceptCompletionHandler handler) {
 		this.socketChannel = socketChannel;
 		this.sessionId = sessionId;		
+		this.handler = handler;
 		registerReceive(); // 초기화하자마자 receive 걸어두기
 	}
 	
@@ -32,7 +34,7 @@ public class Session {
 			@Override
 			public void completed(Integer result, ByteBuffer attachment) {
 				if(result < 0) {
-					closeSession();
+					handler.closeSession(sessionId);
 					return;
 				}
 				
@@ -100,13 +102,13 @@ public class Session {
 				}
 				catch(Exception e) {
 					e.printStackTrace();
-					closeSession();
+					handler.closeSession(sessionId);
 				}
 			}
 
 			@Override
 			public void failed(Throwable exc, ByteBuffer attachment) {
-				closeSession();
+				handler.closeSession(sessionId);
 			}
 		});
 	}
@@ -138,7 +140,7 @@ public class Session {
 			public void completed(Integer result, ByteBuffer attachment) {
 				try {
 					if(result == -1) {
-						closeSession();
+						handler.closeSession(sessionId);
 						return;
 					}
 					
@@ -152,12 +154,12 @@ public class Session {
 
 			@Override
 			public void failed(Throwable exc, ByteBuffer attachment) {
-				closeSession();
+				handler.closeSession(sessionId);
 			}
 		});
 	}
 	
-	public void closeSession() {
+	public void close() {
 		try {
 			DispatcherBot.getDispatcherBot().closeSession(sessionId);
 			socketChannel.close();
